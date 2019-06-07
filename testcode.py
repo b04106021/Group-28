@@ -1,6 +1,23 @@
+#以下為email的import
+import smtplib
+from email.mime.text import MIMEText
+
+#設定寄email的相關資訊
+gmail_user = 'unclewatersource@gmail.com'
+gmail_password = 'Businesscomputing0610'
+
+msg = MIMEText("您的腳踏車剛剛已被檢舉，趕快去把腳踏車移走吧" + '\n' + '\n' + "水源阿伯")
+msg['From'] = "unclewatersource@gmail.com"
+msg['To'] = "@ntu.edu.tw"
+msg['Subject'] = "腳踏車違規提醒"
+
+#以下為import學號認證的function
 from verify_studentid import funtion(is_student_number)
+
+#以下為linebot的import
 from flask import Flask, request, abort
 from urllib.request import urlopen
+
 #from oauth2client.service_account import ServiceAccountCredentials
 
 from linebot import (
@@ -37,7 +54,7 @@ def callback():
     return 'OK'
 
 # 處理訊息
-# 做 chatbot 的人是要寫在這裡，下面的 code 只是測試用的。因為下面這樣寫，所以現在輸 Hi 會得到回應 Hello ，以此類推
+# 做 chatbot 的人是要寫在這裡
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
@@ -50,6 +67,7 @@ def handle_message(event):
         reply_text = '收到了，但檢舉不附圖，此風不可長，快上傳證據照片'
     elif event.message.type == 'image':
         reply_text = '謝謝您的幫忙，打擊亂停自行車，人人有責~ 水源感謝您'
+        
 #查詢的code
     elif #獲得我要查詢的指令:
         reply_text = '請輸入你的學號'
