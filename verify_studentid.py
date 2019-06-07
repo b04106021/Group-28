@@ -9,7 +9,7 @@ def is_student_number(studentidstr):
         
     #check  first letter 
     code1 = studentidstr[0]
-    if code1 != "B" or code1 != "b"
+    if code1 != "B" or code1 != "b":
         return False
     
     
