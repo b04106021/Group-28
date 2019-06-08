@@ -87,6 +87,8 @@ def handle_message(event):
     elif text_type == "location" and agenda == 2:
         reply_text = '收到了，但檢舉不附圖，此風不可長，快上傳證據照片'
         agenda +=1
+    elif text_type != 'image' and agenda == 3:
+        reply_text = '檢舉記得附圖，請上傳證據照片'
     elif text_type == 'image' and agenda == 3:
         reply_text = '謝謝您的幫忙，打擊亂停自行車，人人有責~ 水源感謝您'
         agenda = 0
