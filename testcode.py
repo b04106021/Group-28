@@ -82,16 +82,19 @@ def handle_message(event):
         msg['To'] = str(test) + "@ntu.edu.tw"
         reply_text = '我知道了，那台車在哪呢，我幫你呼叫水源阿北(請使用Line的傳送位置功能傳送地點資訊)'
         agenda +=1
+        bike_id = text
     elif agenda == 2 and text_type != "location":
         reply_text = '請使用Line的傳送位置功能傳送地點資訊'
     elif text_type == "location" and agenda == 2:
         reply_text = '收到了，但檢舉不附圖，此風不可長，快上傳證據照片'
         agenda +=1
-    elif text_type != 'image' and agenda == 3:
-        reply_text = '檢舉記得附圖，請上傳證據照片'
+        place = text
     elif text_type == 'image' and agenda == 3:
         reply_text = '謝謝您的幫忙，打擊亂停自行車，人人有責~ 水源感謝您'
         agenda = 0
+        path = image
+        datetime = datetime.datetime.now()
+        add_violation(bicycle_id, violation = '違規停車' , datetime, place, path)
         stat = 'no_stat'
     
     #查詢
@@ -100,19 +103,25 @@ def handle_message(event):
         reply_text = '請輸入你的學號'
         stat = 'search'
         agenda = 1
+
     elif agenda == 1 and stat = 'search' and text.is_student_number() == False:
         reply_text = '請輸入您的學號'
 
     elif agenda == 1 and stat = 'search' and text.is_student_number() == True:
         agenda += 1
+        bicycle_id = text
     
     elif agenda == 2 and stat = 'search' :
     #尋找資料庫
-    if #在資料庫中:
+        if valid_bicycle(bicycle_id) == True:
+            reply_text = '再亂停阿，被檢舉了吧'
+        else:
+            reply_text = '您是優良的腳踏車公民，目前沒有檢舉紀錄'
+
     else:
         #回到原本選單
         agenda = 0
-        stat = 'none'
+        stat = 'no_stat'
 
     message = TextSendMessage(reply_text)
     line_bot_api.reply_message(event.reply_token, message)
