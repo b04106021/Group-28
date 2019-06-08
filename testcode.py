@@ -57,6 +57,8 @@ def callback():
 # 做 chatbot 的人是要寫在這裡
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    #text_type是用來儲存使用者傳送的message 的type
+    #agenda用來辨識現在進行到哪一步驟
     text = event.message.text
     text_type = event.message.type
     image = event.message.content
@@ -76,6 +78,8 @@ def handle_message(event):
     elif stat == 'report' and agenda == 1 and text.is_student_number() == False:
         reply_text = '請輸入真正的學號'
     elif stat == 'report' and agenda == 1 and text.is_student_number() == True:
+        #在這裡處理了寄信的功能，不確定會不會讓程式當掉
+        msg['To'] = str(test) + "@ntu.edu.tw"
         reply_text = '我知道了，那台車在哪呢，我幫你呼叫水源阿北(請使用Line的傳送位置功能傳送地點資訊)'
         agenda +=1
     elif agenda == 2 and text_type != "location":
@@ -115,3 +119,10 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
+
+server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+server.ehlo()
+server.login(gmail_user, gmail_password)
+server.send_message(msg)
+server.quit()
