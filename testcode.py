@@ -58,25 +58,55 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
-    if #獲得我要檢舉的指令:
+    text_type = event.message.type
+    image = event.message.content
+    location = event.message.address
+    agenda = 0
+    stat = 'no_stat'
+    
+    if state = 'no_stat':
+        reply_text = '系統無法辨識您的訊息,請重新輸入'
+    
+    #檢舉
+    #獲得我要檢舉的指令
+    if text == '我要檢舉': 
         reply_text = '請告訴我又是哪個白癡亂停腳踏車呢，快告訴我他的學號?'
         stat = 'report'
-    elif text.is_student_number() == True and stat == 'report':
-        reply_text = '我知道了，那台車在哪呢，我幫你呼叫水源阿北'
-    elif text == '':
+        agenda = 1
+    elif stat == 'report' and agenda == 1 and text.is_student_number() == False:
+        reply_text = '請輸入真正的學號'
+    elif stat == 'report' and agenda == 1 and text.is_student_number() == True:
+        reply_text = '我知道了，那台車在哪呢，我幫你呼叫水源阿北(請使用Line的傳送位置功能傳送地點資訊)'
+        agenda +=1
+    elif agenda == 2 and text_type != "location":
+        reply_text = '請使用Line的傳送位置功能傳送地點資訊'
+    elif text_type == "location" and agenda == 2:
         reply_text = '收到了，但檢舉不附圖，此風不可長，快上傳證據照片'
-    elif event.message.type == 'image':
+        agenda +=1
+    elif text_type == 'image' and agenda == 3:
         reply_text = '謝謝您的幫忙，打擊亂停自行車，人人有責~ 水源感謝您'
-        
-#查詢的code
-    elif #獲得我要查詢的指令:
+        agenda = 0
+        stat = 'no_stat'
+    
+    #查詢
+    #獲得我要查詢的指令
+    if text == '我要查詢':
         reply_text = '請輸入你的學號'
         stat = 'search'
-    elif text.is_student_number == True and stat = 'search':
-        #尋找資料庫
-        if #在資料庫中:
+        agenda = 1
+    elif agenda == 1 and stat = 'search' and text.is_student_number() == False:
+        reply_text = '請輸入您的學號'
+
+    elif agenda == 1 and stat = 'search' and text.is_student_number() == True:
+        agenda += 1
+    
+    elif agenda == 2 and stat = 'search' :
+    #尋找資料庫
+    if #在資料庫中:
     else:
         #回到原本選單
+        agenda = 0
+        stat = 'none'
 
     message = TextSendMessage(reply_text)
     line_bot_api.reply_message(event.reply_token, message)
