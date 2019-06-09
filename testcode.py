@@ -1,3 +1,7 @@
+#以下為database的import
+#import database as db
+from datetime import datetime
+
 #以下為email的import
 import smtplib
 from email.mime.text import MIMEText
@@ -53,78 +57,79 @@ def callback():
         abort(400)
     return 'OK'
 
+
 # 處理訊息
 # 做 chatbot 的人是要寫在這裡
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #text_type是用來儲存使用者傳送的message 的type
-    #agenda用來辨識現在進行到哪一步驟
+
     text = event.message.text
-    text_type = event.message.type
-    image = event.message.content
-    location = event.message.address
-    agenda = 0
-    stat = 'no_stat'
-    
-    if state = 'no_stat':
-        reply_text = '系統無法辨識您的訊息,請重新輸入'
-    
-    #檢舉
-    #獲得我要檢舉的指令
-    if text == '我要檢舉': 
-        reply_text = '請告訴我又是哪個白癡亂停腳踏車呢，快告訴我他的學號?'
-        stat = 'report'
-        agenda = 1
-    elif stat == 'report' and agenda == 1 and text.is_student_number() == False:
-        reply_text = '請輸入真正的學號'
-    elif stat == 'report' and agenda == 1 and text.is_student_number() == True:
-        #在這裡處理了寄信的功能，不確定會不會讓程式當掉
-        msg['To'] = str(test) + "@ntu.edu.tw"
-        reply_text = '我知道了，那台車在哪呢，我幫你呼叫水源阿北(請使用Line的傳送位置功能傳送地點資訊)'
-        agenda +=1
-        bike_id = text
-    elif agenda == 2 and text_type != "location":
-        reply_text = '請使用Line的傳送位置功能傳送地點資訊'
-    elif text_type == "location" and agenda == 2:
-        reply_text = '收到了，但檢舉不附圖，此風不可長，快上傳證據照片'
-        agenda +=1
-        place = text
-    elif text_type == 'image' and agenda == 3:
-        reply_text = '謝謝您的幫忙，打擊亂停自行車，人人有責~ 水源感謝您'
-        agenda = 0
-        path = image
-        datetime = datetime.datetime.now()
-        add_violation(bicycle_id, violation = '違規停車' , datetime, place, path)
-        stat = 'no_stat'
-    
-    #查詢
-    #獲得我要查詢的指令
-    if text == '我要查詢':
-        reply_text = '請輸入你的學號'
-        stat = 'search'
-        agenda = 1
-
-    elif agenda == 1 and stat = 'search' and text.is_student_number() == False:
-        reply_text = '請輸入您的學號'
-
-    elif agenda == 1 and stat = 'search' and text.is_student_number() == True:
-        agenda += 1
-        bicycle_id = text
-    
-    elif agenda == 2 and stat = 'search' :
-    #尋找資料庫
-        if valid_bicycle(bicycle_id) == True:
-            reply_text = '再亂停阿，被檢舉了吧'
+    #message_id = event.message.id
+    if len(text) == 9:
+        if is_student_number(text) == False:
+            reply_text = '請輸入的學號'
         else:
-            reply_text = '您是優良的腳踏車公民，目前沒有檢舉紀錄'
+            reply_text = '我們收到學號惹'
 
     else:
-        #回到原本選單
-        agenda = 0
-        stat = 'no_stat'
-
+        reply_text = text
+    
     message = TextSendMessage(reply_text)
     line_bot_api.reply_message(event.reply_token, message)
+
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        LocationSendMessage(
+            title=event.message.title, address=event.message.address,
+            latitude=event.message.latitude, longitude=event.message.longitude
+        )
+    )
+
+@handler.add(MessageEvent, message=(ImageMessage, VideoMessage, AudioMessage))
+def handle_content_message(event):
+    if isinstance(event.message, ImageMessage):
+        ext = 'jpg'
+    elif isinstance(event.message, VideoMessage):
+        ext = 'mp4'
+    elif isinstance(event.message, AudioMessage):
+        ext = 'm4a'
+    else:
+        return
+
+    message_content = line_bot_api.get_message_content(event.message.id)
+    with open(file_path, 'wb') as fd:
+    for chunk in message_content.iter_content():
+        fd.write(chunk)
+    """
+    with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix=ext + '-', delete=False) as tf:
+        for chunk in message_content.iter_content():
+            tf.write(chunk)
+        tempfile_path = tf.name
+
+    dist_path = tempfile_path + '.' + ext
+    dist_name = os.path.basename(dist_path)
+    os.rename(tempfile_path, dist_path)"""
+
+    line_bot_api.reply_message(
+        event.reply_token, [
+            TextSendMessage(text="我收到圖片了")#,
+#            TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dist_name))
+#        ])
+
+@handler.add(FollowEvent)
+def handle_follow(event):
+    line_bot_api.reply_message(
+        event.reply_token, TextSendMessage(text=("您好，歡迎使用line台大線上檢舉違停系統!"
+                                "檢舉流程: 1.按鈕: 我要檢舉"
+                                                    "2.輸入被檢舉人學號(e.g. b06303150)"
+                                                    "3.傳送照片違規照片"
+                                                    "4.檢舉完成!"
+                                                    "5.將資料傳入資料庫"
+                                "查詢流程: 1.按鈕: 我想查詢"
+                                                    "2.輸入您的學號:(e.g.b06303200)"
+                                                    "3.系統會自動回報您的腳踏車有無被檢舉")))
 
 import os
 if __name__ == "__main__":
