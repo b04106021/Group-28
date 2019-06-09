@@ -8,8 +8,8 @@ def is_student_number(studentidstr):
         return False
         
     #check  first letter 
-    code1 = studentidstr[0]
-    if code1 != "B" or code1 != "b":
+    code1 = studentidstr[0].lower()
+    if code1 != "b":
         return False
     
     
@@ -21,7 +21,7 @@ def is_student_number(studentidstr):
         
     #先檢查法律學院(A)&生命科學院(B)
     if code_college =="A" or code_college == "B":
-        continue    
+        pass
         
     #已排除法律學院(A)&生命科學院(B)，檢查是否為剩下的學院
     else:
@@ -46,11 +46,11 @@ def is_student_number(studentidstr):
     except:
         return False
     
-    if code_college =="A" and (special_code_for_law_politic_ba not in [str(011), str(012), str(013)] ):
+    if code_college =="A" and (special_code_for_law_politic_ba not in ["011", "012", "013"] ):
         return False
-    if code_college =="3" and studentidstr[5] == "2" and (special_code_for_law_politic_ba not in [str(021), str(022), str(023)] ):
+    if code_college =="3" and studentidstr[5] == "2" and (special_code_for_law_politic_ba not in ["021", "022", "023"] ):
         return False
-    if code_college =="7" and  studentidstr[5] == "1" and (special_code_for_law_politic_ba not in [str(011), str(012)]):
+    if code_college =="7" and  studentidstr[5] == "1" and (special_code_for_law_politic_ba not in ["011", "012"]):
         return False
 
     if str(code_college) == "1" and (int_code_department > 9 or int_code_department < 1):
@@ -83,3 +83,5 @@ def is_student_number(studentidstr):
         
     if int_code_seat_number > 350:
         return False
+
+    return True
