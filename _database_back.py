@@ -90,6 +90,17 @@ def initialize(debug=False):
         handle_err(err)
         return False
 
+    try:
+        conn.execute('''CREATE TABLE IF NOT EXISTS USER_STEP
+            (user_id   TEXT PRIMARY KEY NOT NULL,
+             step      INT              NOT NULL,
+             user_data BLOB             NOT NULL);''')
+        if debug:
+            print("Table USER_STEP created successfully")
+    except OperationalError as err:
+        handle_err(err)
+        return False
+
     # try:
     #     conn.execute('''CREATE TABLE IF NOT EXISTS PHOTO_RECORD
     #         (photo_id   INT  PRIMARY KEY NOT NULL,
