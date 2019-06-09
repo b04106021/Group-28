@@ -72,7 +72,7 @@ def initialize(debug=False):
              violation       TEXT             NOT NULL,
              record_datetime TEXT             NOT NULL,
              record_place    TEXT             NOT NULL,
-             photo_path      TEXT             NOT NULL,
+             photo           BLOB             NOT NULL,
              FOREIGN KEY(bicycle_id) REFERENCES BICYCLE(bicycle_id));''')
         if debug:
             print("Table VIOLATION_RECORD created successfully")
