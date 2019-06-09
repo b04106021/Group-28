@@ -102,15 +102,15 @@ def handle_content_message(event):
     with open(file_path, 'wb') as fd:
     for chunk in message_content.iter_content():
         fd.write(chunk)
-    """
-    with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix=ext + '-', delete=False) as tf:
-        for chunk in message_content.iter_content():
-            tf.write(chunk)
-        tempfile_path = tf.name
+    
+    #with tempfile.NamedTemporaryFile(dir=static_tmp_path, prefix=ext + '-', delete=False) as tf:
+    #    for chunk in message_content.iter_content():
+    #        tf.write(chunk)
+    #    tempfile_path = tf.name
 
-    dist_path = tempfile_path + '.' + ext
-    dist_name = os.path.basename(dist_path)
-    os.rename(tempfile_path, dist_path)"""
+    #dist_path = tempfile_path + '.' + ext
+    #dist_name = os.path.basename(dist_path)
+    #os.rename(tempfile_path, dist_path)
 
     line_bot_api.reply_message(
         event.reply_token, [
