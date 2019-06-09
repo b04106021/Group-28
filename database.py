@@ -68,7 +68,7 @@ def add_bicycle(bicycle_id, student_name, student_id, student_department):
     return False
 
 
-def add_violation(bicycle_id, violation, datetime, place, photo):
+def add_violation(bicycle_id, violation, datetime, place, path):
     """
     新增一筆違規紀錄，回傳違規編號。
     如果新增失敗則會回傳 False。
@@ -77,11 +77,11 @@ def add_violation(bicycle_id, violation, datetime, place, photo):
          violation: str (違規事件)
          datetime: datetime.datetime (日期時間)
          place: str (地點)
-         photo: bytes (照片)
+         path: str (照片路徑)
 
     回傳：str (此筆資料的違規編號)
     """
-    data_tuple = (bicycle_id.upper(), violation, datetime, place, photo)
+    data_tuple = (bicycle_id.upper(), violation, datetime, place, path)
 
     if any(data == None for data in data_tuple):
         return False
@@ -110,8 +110,8 @@ def add_violation(bicycle_id, violation, datetime, place, photo):
         conn.execute("""
             INSERT OR REPLACE INTO VIOLATION_RECORD
                 (record_id, bicycle_id, violation, record_datetime,
-                 record_place, photo)
-            VALUES('%s', '%s', '%s', '%s', '%s', ?)""" % data_tuple[:-1], (photo,))
+                 record_place, photo_path)
+            VALUES('%s', '%s', '%s', '%s', '%s', '%s')""" % data_tuple)
         conn.execute("""
             INSERT OR REPLACE INTO VIOLATION_SERIAL
                 (violation_date, serial_count)
